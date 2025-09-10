@@ -14,18 +14,18 @@ from glob import glob
 logging.getLogger().setLevel(logging.INFO)
 
 # define file paths
-base_dir =  '/store/carroll/col/data/2018/test_rccs/'
-subset_dir = os.path.join(base_dir, 'subsets')
+base_dir =  '/store/carroll/col/data/2018/test_flightlines/'
+raw_dir = '/store/carroll/col/data/2018/raw/rmbl/'
 
 surface_path = '/store/carroll/col/data/2018/test_roi/surface_20240103_avirii_20250730.mat'
 lut_config_path = '/store/carroll/col/data/2018/test_roi/lut_config_20250810.json'
 channelized_uncertainty_path = '/store/carroll/col/data/avirisng_systematic_error_neon.txt'
 rcc_path = '/store/carroll/col/data/2018/test_rccs/rcc_frankenstein_20250908.txt'
-version = '20250909'
+version = '20250910'
+skyview_path = '/store/carroll/col/data/2018/skyview/sky_view_factor'
 
 # get unique flights
-flight_ids = os.listdir(subset_dir)
-flight_ids = set(['_'.join(x.split('_')[:3]) for x in flight_ids if x.startswith('.')==False])
+flight_ids = list(set(['_'.join(x.split('_')[:3]) for x in os.listdir(base_dir) if x.startswith('NIS')]))
 
 # for each flightline subset,
 for flight_id in flight_ids:
@@ -34,12 +34,13 @@ for flight_id in flight_ids:
     # run apply_oe to generate config, file structure, LUT
     apply_oe(
             # file paths
-            input_radiance = os.path.join(subset_dir, f'{flight_id}_rdn'),
-            input_loc = os.path.join(subset_dir, f'{flight_id}_igm'),
-            input_obs = os.path.join(subset_dir, f'{flight_id}_obs'),
+            input_radiance = glob(os.path.join(raw_dir, '*', f'{flight_id}_rdn_ort'))[0], # Radiance
+            input_loc = glob(os.path.join(raw_dir, '*', f'{flight_id}_rdn_ort_igm_ort'))[0], # Location - IGM (lon, lat, elev)
+            input_obs = glob(os.path.join(raw_dir, '*', f'{flight_id}_rdn_obs_ort'))[0], # Observations
             working_directory = working_dir,
             surface_path = surface_path,
             lut_config_file = lut_config_path,
+            skyview_factor = skyview_path,
             
             # instrument, rte specifications
             sensor = 'neon',
@@ -51,6 +52,6 @@ for flight_id in flight_ids:
             # implementation
             n_cores = os.cpu_count()-2,
             ray_temp_dir = '/tmp/ray',
-            analytical_line=False,
+            analytical_line=True,
             multiple_restarts=True
         )
