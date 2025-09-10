@@ -12,7 +12,7 @@ bbox_buf = bbox %>%
 plot(bbox_buf)
 
 tiles = list()
-srtm_fps = list.files(pattern='\\.bil', recursive=T, full.names=T)
+srtm_fps = list.files(pattern='\\v3.bil$', recursive=T, full.names=T)
 
 for (fp in srtm_fps){
   tile = rast(fp) %>%
@@ -35,7 +35,7 @@ plot(mosaic)
 writeRaster(mosaic, 'dsm_1m_mosaic_bbox_buf1250m.bil', filetype='ENVI', overwrite=T)
 
 # upsample to 10m? To speed it up... Should be mostly good
-mosaic_10m = aggregate(mosaic, fact=10, fun=mean, na.rm=T)
-plot(mosaic_10m)
-writeRaster(mosaic_10m, 'dsm_10m_mosaic_bbox_buf1250m.bil', filetype='ENVI', overwrite=T)
+mosaic_5m = aggregate(mosaic, fact=5, fun=mean, na.rm=T)
+plot(mosaic_5m)
+writeRaster(mosaic_5m, 'dsm_5m_mosaic_bbox_buf1250m.bil', filetype='ENVI', overwrite=T)
 
