@@ -15,11 +15,11 @@ logging.getLogger().setLevel(logging.INFO)
 
 # set up parser so flight id submitted from batch script
 parser = argparse.ArgumentParser()
-parser.add_argument("--flight_id", required=True)
+parser.add_argument("--fid", required=True)
 parser.add_argument("--day", required=True)
 args = parser.parse_args()
 
-flight_id = args.flight_id
+flight_id = args.fid
 day = args.day
 
 # define file paths

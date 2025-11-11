@@ -13,6 +13,9 @@ from isofit.inversion.inverse_simple import invert_algebraic
 from isofit.configs import configs
 from isofit.core.geometry import Geometry
 
+import rasterio
+from rasterio.warp import reproject, Resampling
+
 def add_byte_order(fp_hdr, byte_order=0):
     """
     Adds 'byte order' to an ENVI .hdr file if it's missing
@@ -221,4 +224,33 @@ def viz_rfl_subset(row1, col1, size, flight, working_dir, n_sample, wl, plt_widg
     
     plt.show()
 
+def clip_skyview_per_flightline(fp_skyview, fp_ref, fp_out):
+    """
+    Resample a campaign-wide skyview factor to the geoemtry of individual flightlines
+    """
+    with rasterio.open(fp_ref) as ref, rasterio.open(fp_skyview) as skyview:    
+        dst = np.full((1, ref.height, ref.width),
+                      ref.nodata if ref.nodata is not None else np.nan,
+                      dtype=np.float32)
     
+        reproject(
+            source=rasterio.band(skyview, 1),
+            destination=dst[0],
+            src_transform=skyview.transform,
+            src_crs=skyview.crs,
+            src_nodata=skyview.nodata,
+            dst_transform=ref.transform,
+            dst_crs=ref.crs,
+            dst_nodata=skyview.nodata if skyview.nodata is not None else -9999,
+            resampling=Resampling.bilinear,
+        )
+    
+        profile_out = ref.profile
+        profile_out.update(
+            dtype=dst.dtype,
+            count=1,
+            nodata=skyview.nodata if skyview.nodata is not None else -9999,
+            interleave='bil'
+        )
+        with rasterio.open(fp_out, 'w', **profile_out) as dst_ds:
+            dst_ds.write(dst)    
