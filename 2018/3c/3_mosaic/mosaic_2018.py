@@ -1,11 +1,12 @@
 import subprocess
 
 # define filepaths
-today = '20251108'
-all_obs_files = '/store/carroll/col/data/2018/mosaic/top_priority_isofit_obs.txt'
+today = '20251114'
+all_obs_files = '/store/carroll/col/data/2018/mosaic/file_lists/top_priority_isofit_obs.txt'
+mosaic_glt_out = f'/store/carroll/col/data/2018/mosaic/neon_2018_mosaic_glt_{today}.tif'
+
 # all_rfl_files = '/store/carroll/col/data/2018/mosaic/top_priority_isofit_rfl.txt'
 # all_unc_files = '/store/carroll/col/data/2018/mosaic/top_priority_isofit_unc.txt'
-mosaic_glt_out = f'/store/carroll/col/data/2018/mosaic/neon_2018_mosaic_glt_{today}.tif'
 # mosaic_rfl_out = f'/store/carroll/col/data/2018/mosaic/neon_2018_mosaic_rfl_{today}'
 # mosaic_unc_out = f'/store/carroll/col/data/2018/mosaic/neon_2018_mosaic_unc_{today}'
 # mosaic_obs_out = f'/store/carroll/col/data/2018/mosaic/neon_2018_mosaic_obs_{today}'
