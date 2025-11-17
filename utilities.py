@@ -83,6 +83,69 @@ def subset_region(fp_rdn, fp_obs, fp_igm, output_dir, x, y, buf, brighten_factor
     axs[2].set_title('loc (elev)')
     plt.show()
 
+def subset_region_2025(fp_rdn, fp_obs, fp_igm, output_dir, site_name, x, y, buf, brighten_factor=1):
+    """
+    subset a larger flightline, visualize subset rdn, obs, loc (where everything is the same shape, ort or raw)
+    """
+    
+    # translate x, y to raw space coordinates
+    igm = envi.open(fp_igm).open_memmap(interleave='bip').copy()
+    rows, cols = igm[...,0].shape
+    flat_x = igm[...,0].flatten()
+    flat_y = igm[...,1].flatten()
+    diffs = np.abs(flat_x - x) + np.abs(flat_y - y)
+    idx = np.argmin(diffs)
+    row, col = np.unravel_index(idx, (rows, cols))
+
+    flight_id = fp_igm.split('/')[-1].split('_IGM')[0]
+
+    # check that target is not nan
+    tmp = envi.open(fp_rdn).open_memmap(interleave='bip')[row, col, 0]
+    if tmp==-9999:
+        print('no data')
+    else:
+        # rdn
+        fp_out = os.path.join(output_dir, f'{flight_id}_{site_name}_rdn.hdr')
+        meta = envi.open(fp_rdn).metadata
+        meta['lines'] = buf*2
+        meta['samples'] = buf*2
+        out_ds = envi.create_image(fp_out, meta, ext='', force=True)
+        out_ds.open_memmap(writable=True)[:,:,:] = envi.open(fp_rdn).open_memmap(interleave='bip')[row-buf:row+buf, col-buf:col+buf, :].copy()
+        rdn = envi.open(fp_out).open_memmap(interleave='bip')[:,:,np.array([60,40,30])].copy()
+        del out_ds
+    
+        # obs
+        fp_out = os.path.join(output_dir, f'{flight_id}_{site_name}_obs.hdr')
+        meta = envi.open(fp_obs).metadata
+        meta['lines'] = buf*2
+        meta['samples'] = buf*2
+        out_ds = envi.create_image(fp_out, meta, ext='', force=True)
+        out_ds.open_memmap(writable=True)[:,:,:] = envi.open(fp_obs).open_memmap(interleave='bip')[row-buf:row+buf, col-buf:col+buf, :].copy()
+        obs = envi.open(fp_out).open_memmap(interleave='bip')[:,:,6].copy() # slope
+        del out_ds
+    
+        # igm
+        fp_out = os.path.join(output_dir, f'{flight_id}_{site_name}_loc.hdr')
+        meta = envi.open(fp_igm).metadata
+        meta['lines'] = buf*2
+        meta['samples'] = buf*2
+        out_ds = envi.create_image(fp_out, meta, ext='', force=True)
+        out_ds.open_memmap(writable=True)[:,:,:] = envi.open(fp_igm).open_memmap(interleave='bip')[row-buf:row+buf, col-buf:col+buf, :].copy()
+        loc = envi.open(fp_out).open_memmap(interleave='bip')[:,:,2].copy() # elev
+        del out_ds
+    
+        # visualize
+        fig, axs = plt.subplots(ncols=3, figsize=(15,5))
+        axs[0].imshow(rdn/np.max(rdn)*brighten_factor)
+        p1 = axs[1].imshow(obs)
+        p2 = axs[2].imshow(loc)
+        fig.colorbar(p1)
+        fig.colorbar(p2)
+        axs[0].set_title('rdn')
+        axs[1].set_title('obs (slope)')
+        axs[2].set_title('loc (elev)')
+        plt.show()
+        
 def single_px_retrieval(config, rdn, obs, loc, n_states=2, plot=True):
     """
     run a single pixel retrieval, option to visualize surface, atm solution at each step
