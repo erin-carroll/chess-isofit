@@ -1,7 +1,7 @@
 from glob import glob
 import subprocess
 
-rfls = [x for x in glob('/store/carroll/col/data/2018/deploy_1c_20251001/*/output/*rfl') if 'subs' not in x]
+rfls = [x for x in glob('/store/carroll/col/data/2018/deploy_3c_20251126/*/output/*rfl') if 'subs' not in x]
 
 for fp_rfl in rfls:
     fp_ewt_out = fp_rfl.replace('rfl', 'ewt')
