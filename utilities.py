@@ -316,4 +316,62 @@ def clip_skyview_per_flightline(fp_skyview, fp_ref, fp_out):
             interleave='bil'
         )
         with rasterio.open(fp_out, 'w', **profile_out) as dst_ds:
-            dst_ds.write(dst)    
+            dst_ds.write(dst)
+
+def cwn_to_math(angle_cw_from_north):
+    return (90 - angle_cw_from_north) % 360
+
+def edge_coords_from_target(target_px_x: np.array, target_px_y: np.array, angle: np.array, bounds):
+    """ Get the coordinates of the edge pixel in the direction of the given angle from a target pixel.
+
+    Args:
+        target_px_x (array, int): array of x-coordinate of the target pixel.
+        target_px_y (array, int): array of y-coordinate of the target pixel.
+        angle (array, float): angle in degrees, clockwise from North.
+        bounds (tuple): bounds of the image in the format (min_x, min_y, max_x, max_y).
+    """
+
+    # Compute direction vector (dx, dy) in image coordinates
+    dy = np.sin(np.deg2rad(angle))  
+    dx = np.cos(np.deg2rad(angle))  
+    #dy = -dy  # Invert y direction for image coordinates
+
+    invert = np.zeros_like(angle, dtype=bool)
+    invert[np.logical_and(angle > 180, angle < 360)] = True
+    invert[np.logical_and(angle < 0, angle > -180)] = True
+
+    xdelta = np.ones_like(angle, dtype=int) * target_px_x
+    ydelta = np.ones_like(angle, dtype=int) * target_px_y
+
+    if np.any(invert):
+        print('inverting')
+        xdelta[invert] = bounds[2] - target_px_x
+        ydelta[invert] = bounds[3] - target_px_y
+        xdelta[invert] *= -1
+        ydelta[invert] *= -1
+
+    # There will be two candidate edges, one on the x-axis, and one the y-axis.
+    # Start by finding both
+    edge_px_horizontal_y = np.zeros_like(angle, dtype=int) 
+    if np.any(invert):
+        edge_px_horizontal_y[invert] = bounds[3]
+    edge_px_horizontal_x = dx / dy * ydelta  + target_px_x
+
+    edge_px_vertical_x = np.zeros_like(angle, dtype=int)
+    if np.any(invert):
+        edge_px_vertical_x[invert] = bounds[2]
+    edge_px_vertical_y = dy / dx * xdelta + target_px_y
+
+    vertical_select = np.logical_or.reduce((
+        edge_px_horizontal_x < bounds[0],
+        edge_px_horizontal_x > bounds[2],
+        edge_px_horizontal_y < bounds[1],
+        edge_px_horizontal_y > bounds[3]
+    ))
+
+    edge_px_x_out = edge_px_horizontal_x.copy()
+    edge_px_y_out = edge_px_horizontal_y.copy()
+    edge_px_x_out[vertical_select] = edge_px_vertical_x[vertical_select]
+    edge_px_y_out[vertical_select] = edge_px_vertical_y[vertical_select]
+    slope = dy / dx
+    return edge_px_x_out, edge_px_y_out, slope
