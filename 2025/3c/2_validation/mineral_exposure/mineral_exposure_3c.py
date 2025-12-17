@@ -48,8 +48,8 @@ if os.path.exists(working_dir) is False:
         # implementation
         n_cores = os.cpu_count()-2,
         ray_temp_dir = '/tmp/ray',
-        analytical_line=False,
+        analytical_line=True,
         multiple_restarts=True,
         no_min_lut_spacing=True,
-        pressure_elevation=False
+        pressure_elevation=True
     )
