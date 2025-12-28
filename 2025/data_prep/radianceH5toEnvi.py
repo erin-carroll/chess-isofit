@@ -1,3 +1,5 @@
+# copied directly from Tristan Goulden @ NEON
+
 # -*- coding: utf-8 -*-
 """
 Spyder Editor

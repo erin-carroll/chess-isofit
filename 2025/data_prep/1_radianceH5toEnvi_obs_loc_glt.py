@@ -1,6 +1,6 @@
 import sys
-sys.path.append('/store/carroll/repos/chess-isofit/')
-from h5_to_envi import radianceH5toEnvi
+sys.path.append('/store/carroll/repos/chess-isofit/2025/')
+from data_prep import radianceH5toEnvi
 import os
 from glob import glob
 
