@@ -12,6 +12,7 @@ fids = [x.split('/')[-1].removesuffix('_IGM_Data.hdr') for x in glob('raw/L1/rad
 
 # smooth loc dsm
 for fid in fids:
+    print('loc', fid)
     fp_loc = f'raw/L1/radianceENVI/{fid}_IGM_Data.hdr'
     loc = envi.open(fp_loc).open_memmap().copy()
     
@@ -40,6 +41,7 @@ for fid in fids:
 
 # smooth slope, aspect, cos i
 for fid in fids:
+    print('obs', fid)
     fp_obs = f'raw/L1/radianceENVI/{fid}_OBS_Data.hdr'
     obs = envi.open(fp_obs).open_memmap().copy()
     dsm = envi.open(f'raw/L1/radianceENVI/{fid}_loc_smooth.hdr').open_memmap()[...,2].copy()
@@ -55,10 +57,17 @@ for fid in fids:
     solar_az = np.radians(obs[...,3])
     solar_zen = np.radians(obs[...,4])
     cos_i = (np.cos(solar_zen) * np.cos(slope) + np.sin(solar_zen) * np.sin(slope) * np.cos(solar_az - aspect))
-
-    # update obs, loc files
-    obs[...,6] = np.degrees(slope)
-    obs[...,7] = np.degrees(aspect)
+    slope = np.degrees(slope)
+    aspect = np.degrees(aspect)
+    
+    # reimpose na masks
+    slope[np.isnan(slope)] = nodata
+    aspect[np.isnan(aspect)] = nodata
+    cos_i[np.isnan(cos_i)] = nodata
+    
+    # update obs file
+    obs[...,6] = slope
+    obs[...,7] = aspect
     obs[...,8] = cos_i
 
     # export
