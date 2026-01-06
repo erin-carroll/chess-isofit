@@ -12,7 +12,7 @@ all <- rbind(crbu, almo, upta) %>%
   project('epsg:32613')
 bbox <- ext(all) %>%
   as.polygons() %>%
-  buffer(2500)
+  buffer(20000)
 
 plot(bbox)
 plot(all, add=T)

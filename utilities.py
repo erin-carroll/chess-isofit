@@ -399,17 +399,18 @@ def edge_coords_from_target(target_px_x: np.array, target_px_y: np.array, angle:
     dx = np.cos(np.deg2rad(angle))  
     #dy = -dy  # Invert y direction for image coordinates
 
-    invert = np.zeros_like(angle, dtype=bool)
-    invert[np.logical_and(angle > 180, angle < 360)] = True
-    invert[np.logical_and(angle < 0, angle > -180)] = True
+    # invert = np.zeros_like(angle, dtype=bool)
+    # invert[np.logical_and(angle > 180, angle < 360)] = True
+    # invert[np.logical_and(angle < 0, angle > -180)] = True
+    invert = np.ones_like(angle, dtype=bool)
 
     xdelta = np.ones_like(angle, dtype=int) * target_px_x
     ydelta = np.ones_like(angle, dtype=int) * target_px_y
 
     if np.any(invert):
         print('inverting')
-        xdelta[invert] = bounds[2] - target_px_x
-        ydelta[invert] = bounds[3] - target_px_y
+        xdelta[invert] = bounds[2] - target_px_x[invert]
+        ydelta[invert] = bounds[3] - target_px_y[invert]
         xdelta[invert] *= -1
         ydelta[invert] *= -1
 

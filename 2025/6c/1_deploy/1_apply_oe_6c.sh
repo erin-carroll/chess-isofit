@@ -6,7 +6,7 @@ for fid in "${FIDS[@]}"; do
         --nodes=1 \
         --cpus-per-task=64 \
         --partition=highcpu \
-        --mem=300G \
+        --mem=350G \
         --output=/home/carroll/logs/%j_%x.out \
         --error=/home/carroll/logs/%j_%x.err \
         --wrap="export MKL_NUM_THREADS=1; export OMP_NUM_THREADS=1; python /store/carroll/repos/chess-isofit/2025/6c/1_deploy/0_apply_oe_6c.py --fid ${fid}"

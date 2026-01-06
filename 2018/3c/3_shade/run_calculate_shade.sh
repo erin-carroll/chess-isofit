@@ -2,7 +2,7 @@ FIDS=($(cat /store/carroll/repos/chess-isofit/2018/3c/1_deploy/crbu_2018_fids.tx
 
 for fid in "${FIDS[@]}"; do
     sbatch \
-        --job-name=test_shade_${fid} \
+        --job-name=shade_${fid} \
         --nodes=1 \
         --cpus-per-task=64 \
         --partition=patient \

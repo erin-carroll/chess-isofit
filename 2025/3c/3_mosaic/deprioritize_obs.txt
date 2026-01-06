@@ -1,8 +1,0 @@
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250628_155528_CRBU_DP1_L034-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250629_153839_CRBU_DP1_L043-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250629_154915_CRBU_DP1_L044-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250629_160003_CRBU_DP1_L045-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250629_161038_CRBU_DP1_L046-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250629_162123_CRBU_DP1_L047-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250629_163144_CRBU_DP1_L048-1_OBS_Data
-/store/carroll/col/data/2025/raw/L1/radianceENVI/NIS01_20250702_162640_CRBU_DP1_L064-1_OBS_Data

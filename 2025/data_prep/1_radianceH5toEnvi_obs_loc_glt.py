@@ -11,9 +11,11 @@ h5_files = glob(os.path.join(h5_dir, '*/*/*.h5'))
 
 filePathToEnviProjCs = '/store/shared/ENVI6/envi61/idl/resource/pedata/predefined/EnviPEProjcsStrings.txt'
 
-rasterNames = ['IGM_Data','OBS_Data','GLT_Data']
+# rasterNames = ['IGM_Data','OBS_Data','GLT_Data']
+rasterNames = ['IGM_Data']
 
 for h5_filename in h5_files:
+    print(h5_filename)
     for rasterName in rasterNames:
         outFile = os.path.join(outDir,os.path.basename(h5_filename).replace('radiance.h5',rasterName))
         try:

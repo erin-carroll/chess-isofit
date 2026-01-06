@@ -25,7 +25,7 @@ os.chdir('/store/carroll/col/data')
 base_dir =  '2018/deploy_6c_20251229/'
 raw_dir = '2018/raw/L1/'
 
-working_dir = os.path.join(base_dir, fid)
+working_dir = os.path.join(base_dir, f'{fid}_smooth_skyview')
 
 surface_path = 'surface_20240103_avirii_20250730.mat'
 channelized_uncertainty_path = 'avirisng_systematic_error_neon.txt'
@@ -48,12 +48,12 @@ apply_oe(
     inversion_windows = [[400.0, 1360.0], [1410, 1800.0], [1970, 2450.0]],
     
     # implementation
-    n_cores = os.cpu_count(),
+    n_cores = 64,
     ray_temp_dir = '/tmp/ray',
     analytical_line=True,
     multiple_restarts=True,
     no_min_lut_spacing=True,
-    pressure_elevation=False,
+    pressure_elevation=True,
     presolve=True,
     config_only=False,
 )
