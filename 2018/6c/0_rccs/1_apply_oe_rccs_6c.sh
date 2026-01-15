@@ -1,11 +1,11 @@
-FIDS=($(cat /store/carroll/repos/chess-isofit/2018/6c/0_rccs/bright_dark_fids.txt))
+FIDS=($(cat /store/carroll/repos/chess-isofit/2018/6c/0_rccs/cal_tarp_fids.txt))
 
 for fid in "${FIDS[@]}"; do
     sbatch \
-        --job-name=test_rccs_6c_${fid} \
+        --job-name=rccs_6c_${fid} \
         --nodes=1 \
         --cpus-per-task=64 \
-        --partition=highcpu \
+        --partition=standard \
         --mem=300G \
         --output=/home/carroll/logs/%j_%x.out \
         --error=/home/carroll/logs/%j_%x.err \

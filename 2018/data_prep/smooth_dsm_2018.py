@@ -9,7 +9,7 @@ from tqdm import tqdm
 os.chdir('/store/carroll/col/data/2018')
 
 nodata = -9999
-sigma=9
+sigma = 91
 
 fids = [x.split('/')[-1].removesuffix('_rdn_obs_ort.hdr') for x in glob('raw/L1/*/*_obs_ort.hdr')]
 print(len(fids))
@@ -56,6 +56,10 @@ for fid in tqdm(fids):
     solar_az = np.radians(obs[...,3])
     solar_zen = np.radians(obs[...,4])
     cos_i = (np.cos(solar_zen) * np.cos(slope) + np.sin(solar_zen) * np.sin(slope) * np.cos(solar_az - aspect))
+    
+    # slope, aspect back to degrees
+    slope = np.degrees(slope)
+    aspect = np.degrees(aspect)
 
     # put back into obs, reimpose na value
     obs[...,6] = slope

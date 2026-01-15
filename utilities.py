@@ -350,24 +350,24 @@ def viz_rfl_subset(row1, col1, size, flight, working_dir, n_sample, wl, plt_widg
     
     plt.show()
 
-def clip_skyview_per_flightline(fp_skyview, fp_ref, fp_out):
+def clip_dtm_per_flightline(fp_dtm, fp_ref, fp_out):
     """
-    Resample a campaign-wide skyview factor to the geoemtry of individual flightlines
+    Resample a DTM mosaic to the geometry of individual flightlines
     """
-    with rasterio.open(fp_ref) as ref, rasterio.open(fp_skyview) as skyview:    
+    with rasterio.open(fp_ref) as ref, rasterio.open(fp_dtm) as dtm:    
         dst = np.full((1, ref.height, ref.width),
                       ref.nodata if ref.nodata is not None else np.nan,
                       dtype=np.float32)
     
         reproject(
-            source=rasterio.band(skyview, 1),
+            source=rasterio.band(dtm, 1),
             destination=dst[0],
-            src_transform=skyview.transform,
-            src_crs=skyview.crs,
-            src_nodata=skyview.nodata,
+            src_transform=dtm.transform,
+            src_crs=dtm.crs,
+            src_nodata=dtm.nodata,
             dst_transform=ref.transform,
             dst_crs=ref.crs,
-            dst_nodata=skyview.nodata if skyview.nodata is not None else -9999,
+            dst_nodata=dtm.nodata if dtm.nodata is not None else -9999,
             resampling=Resampling.bilinear,
         )
     
@@ -375,7 +375,7 @@ def clip_skyview_per_flightline(fp_skyview, fp_ref, fp_out):
         profile_out.update(
             dtype=dst.dtype,
             count=1,
-            nodata=skyview.nodata if skyview.nodata is not None else -9999,
+            nodata=dtm.nodata if dtm.nodata is not None else -9999,
             interleave='bil'
         )
         with rasterio.open(fp_out, 'w', **profile_out) as dst_ds:

@@ -23,7 +23,7 @@ fid = args.fid
 base_dir =  '/store/carroll/col/data/2018/rccs/'
 raw_dir = '/store/carroll/col/data/2018/rccs/subsets/'
 
-version = '6c'
+version = '6c_'
 working_dir = os.path.join(base_dir, f'{fid}_{version}')
 
 surface_path = '/store/carroll/col/data/surface_20240103_avirii_20250730.mat'
@@ -37,7 +37,7 @@ if os.path.exists(working_dir) is False:
         input_obs = f'{raw_dir}/{fid}_obs', # Observations
         working_directory = working_dir,
         surface_path = surface_path,
-        skyview_factor = f'{raw_dir}/{fid}_sky_view',
+        # skyview_factor = f'{raw_dir}/{fid}_sky_view',
         
         # instrument, rte specifications
         sensor = 'neon',
@@ -46,10 +46,11 @@ if os.path.exists(working_dir) is False:
         inversion_windows = [[400.0, 1360.0], [1410, 1800.0], [1970, 2450.0]],
         
         # implementation
-        n_cores = os.cpu_count(),
+        n_cores = 64,
         ray_temp_dir = '/tmp/ray',
         # analytical_line=True,
         multiple_restarts=True,
         no_min_lut_spacing=True,
-        pressure_elevation=True
+        pressure_elevation=True,
+        presolve=False,
     )

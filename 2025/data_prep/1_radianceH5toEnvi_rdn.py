@@ -7,8 +7,7 @@ from glob import glob
 os.chdir('/store/carroll/col/data/2025/')
 outDir = 'raw/L1/radianceENVI/'
 h5_dir = 'raw/L1/radianceH5/'
-# h5_files = glob(os.path.join(h5_dir, '*/*/*.h5'))
-h5_files = ['raw/L1/radianceH5/2025_UPTA_1/2025071213/NEON_D13_UPTA_DP1_L034-1_20250712_radiance.h5']
+h5_files = glob(os.path.join(h5_dir, '*/*/*.h5'))
 
 filePathToEnviProjCs = '/store/shared/ENVI6/envi61/idl/resource/pedata/predefined/EnviPEProjcsStrings.txt'
 

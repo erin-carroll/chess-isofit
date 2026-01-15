@@ -11,4 +11,4 @@
 export PATH="/store/shared/rclone/bin:$PATH"
 
 # copy 2025 radiance (.h5)
-rclone copy neon_gcs:neon-aa-aop-crestedbutte/2025/FullSite/D13/2025_UPTA_1/L1/Spectrometer/RadianceH5/2025071213/NEON_D13_UPTA_DP1_L034-1_20250712_radiance.h5 /store/carroll/col/data/2025/raw/L1/radianceH5/2025_UPTA_1/ --progress
+rclone copy neon_gcs:neon-aa-aop-crestedbutte/2025/FullSite/D13/2025_CRBU_2/L1/Spectrometer/RadianceH5/2025062813/NEON_D13_CRBU_DP1_L036-1_20250628_radiance.h5 /store/carroll/col/data/2025/raw/L1/radianceH5/2025_CRBU_2/2025062813/ --progress

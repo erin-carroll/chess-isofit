@@ -3,11 +3,7 @@ from isofit.utils.apply_oe import apply_oe
 
 import argparse
 import os
-from spectral.io import envi
-import numpy as np
-import ray
 import logging
-import json
 from glob import glob
 
 # Enable the ISOFIT logger
@@ -22,7 +18,7 @@ fid = args.fid
 os.chdir('/store/carroll/col/data')
 
 # define file paths
-base_dir =  '2025/deploy_6c_20251229/'
+base_dir =  '2025/deploy_6c_20260108/'
 raw_dir = '2025/raw/L1/radianceENVI/'
 
 working_dir = os.path.join(base_dir, fid)
@@ -39,7 +35,7 @@ if os.path.exists(working_dir) is False:
         input_obs = f'{raw_dir}/{fid}_obs_smooth', # Observations
         working_directory = working_dir,
         surface_path = surface_path,
-        skyview_factor = f'2025/sky_view/sky_view_fid/{fid}_sky_view',
+        # skyview_factor = f'2025/sky_view/sky_view_fid/{fid}_sky_view',
         rdn_factors_path = rcc_path,
         
         # instrument, rte specifications
@@ -49,10 +45,11 @@ if os.path.exists(working_dir) is False:
         inversion_windows = [[400.0, 1360.0], [1410, 1800.0], [1970, 2450.0]],
         
         # implementation
-        n_cores = os.cpu_count(),
+        n_cores = 64,
         ray_temp_dir = '/tmp/ray',
         analytical_line=True,
         multiple_restarts=True,
         no_min_lut_spacing=True,
-        pressure_elevation=True
+        pressure_elevation=True,
+        presolve=True,
     )

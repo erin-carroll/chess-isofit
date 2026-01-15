@@ -5,7 +5,7 @@ for fid in "${FIDS[@]}"; do
         --job-name=shade_${fid} \
         --nodes=1 \
         --cpus-per-task=64 \
-        --partition=patient \
+        --partition=standard \
         --mem=300G \
         --output=/home/carroll/logs/%j_%x.out \
         --error=/home/carroll/logs/%j_%x.err \

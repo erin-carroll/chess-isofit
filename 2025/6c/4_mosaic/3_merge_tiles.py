@@ -10,7 +10,8 @@ import spectral_util.mosaic as mosaic
 
 os.chdir('/store/carroll/col/data/2025/')
 
-domain = 'ALMO'
+domain = 'CRBU'
+print(domain)
 
 input_file_list = f'mosaic/file_lists/top_priority_obs_{domain}.txt'
 input_files = [x.strip() for x in open(input_file_list, 'r').readlines()]
@@ -46,6 +47,7 @@ output_file = f'mosaic/{domain}_reference_grid.tif'
 spec_io.write_cog(output_file, glt, meta, nodata_value=nodata)
 
 # warp each tile to the reference grid
+print('warping tiles to reference grid...')
 ref_fp = f'mosaic/{domain}_reference_grid.tif'
 ref = gdal.Open(ref_fp)
 gt = ref.GetGeoTransform()
@@ -75,6 +77,7 @@ for fp in tile_fps:
     aligned.append(fp_out)
 
 # merge grid aligned tiles
+print('merging aligned tiles...')
 ds = [rasterio.open(fp) for fp in aligned]
 mosaic, transform = merge(ds, method='first', nodata=nodata)
 out_meta = ds[0].meta.copy()

@@ -2,7 +2,7 @@ FIDS=($(cat /store/carroll/repos/chess-isofit/2025/6c/0_rccs/rcc_subsets_2025_fi
 
 for fid in "${FIDS[@]}"; do
     sbatch \
-        --job-name=test_rccs_6c_${fid} \
+        --job-name=3025_rccs_6c_${fid} \
         --nodes=1 \
         --cpus-per-task=64 \
         --partition=highcpu \

@@ -9,7 +9,7 @@ from tqdm import tqdm
 os.chdir('/store/carroll/col/data/2025')
 
 nodata = -9999
-sigma=9
+sigma=91
 
 fids = [x.split('/')[-1].removesuffix('_IGM_Data.hdr') for x in glob('raw/L1/radianceENVI/*_IGM_Data.hdr')]
 
@@ -55,6 +55,10 @@ for fid in tqdm(fids):
     solar_az = np.radians(obs[...,3])
     solar_zen = np.radians(obs[...,4])
     cos_i = (np.cos(solar_zen) * np.cos(slope) + np.sin(solar_zen) * np.sin(slope) * np.cos(solar_az - aspect))
+    
+    # slope, aspect back to degrees
+    slope = np.degrees(slope)
+    aspect = np.degrees(aspect)
 
     # put back into obs, reimpose na value
     obs[...,6] = slope
@@ -62,7 +66,7 @@ for fid in tqdm(fids):
     obs[...,8] = cos_i
     obs[na_mask, 6:9] = nodata
 
-     # export
+    # export
     fp_out = fp_obs.replace('OBS_Data', 'obs_smooth')
     meta = envi.open(fp_obs).metadata
     envi.create_image(fp_out, meta, ext='', force=True)
