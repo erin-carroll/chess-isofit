@@ -9,9 +9,10 @@ from tqdm import tqdm
 os.chdir('/store/carroll/col/data/2025')
 
 nodata = -9999
-sigma=91
+sigma = 31
 
 fids = [x.split('/')[-1].removesuffix('_IGM_Data.hdr') for x in glob('raw/L1/radianceENVI/*_IGM_Data.hdr')]
+print(len(fids))
 
 # smooth loc dsm
 for fid in tqdm(fids):

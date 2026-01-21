@@ -1,4 +1,4 @@
-FIDS=($(cat /store/carroll/repos/chess-isofit/2018/6c/1_deploy/crbu_2018_fids_test.txt))
+FIDS=($(cat /store/carroll/repos/chess-isofit/2018/6c/1_deploy/crbu_2018_fids_test_flightline_artifacts.txt))
 
 for fid in "${FIDS[@]}"; do
     sbatch \

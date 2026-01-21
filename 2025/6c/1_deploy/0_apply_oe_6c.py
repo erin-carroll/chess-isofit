@@ -18,7 +18,7 @@ fid = args.fid
 os.chdir('/store/carroll/col/data')
 
 # define file paths
-base_dir =  '2025/deploy_6c_20260108/'
+base_dir =  '2025/deploy_6c_20260120/'
 raw_dir = '2025/raw/L1/radianceENVI/'
 
 working_dir = os.path.join(base_dir, fid)

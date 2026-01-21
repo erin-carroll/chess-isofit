@@ -18,10 +18,10 @@ fid = args.fid
 os.chdir('/store/carroll/col/data')
 
 # define file paths
-base_dir =  '2018/deploy_6c_20260109/'
+base_dir =  '2018/deploy_6c_20260120/'
 raw_dir = '2018/raw/L1/'
 
-working_dir = os.path.join(base_dir, f'{fid}_dsm_smooth_31')
+working_dir = os.path.join(base_dir, f'{fid}')
 
 surface_path = 'surface_20240103_avirii_20250730.mat'
 channelized_uncertainty_path = 'avirisng_systematic_error_neon.txt'
