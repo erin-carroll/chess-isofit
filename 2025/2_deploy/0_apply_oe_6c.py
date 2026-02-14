@@ -18,7 +18,7 @@ fid = args.fid
 os.chdir('/store/carroll/col/data')
 
 # define file paths
-base_dir =  '2025/deploy_6c_20260120/'
+base_dir =  '2025/deploy_6c_20260214/'
 raw_dir = '2025/raw/L1/radianceENVI/'
 
 working_dir = os.path.join(base_dir, fid)
@@ -31,8 +31,8 @@ if os.path.exists(working_dir) is False:
     apply_oe(
         # file paths
         input_radiance = f'{raw_dir}/{fid}_rdn', # Radiance
-        input_loc = f'{raw_dir}/{fid}_loc_smooth', # Location - IGM (lon, lat, elev)
-        input_obs = f'{raw_dir}/{fid}_obs_smooth', # Observations
+        input_loc = f'{raw_dir}/{fid}_IGM_Data', # Location - IGM (lon, lat, elev)
+        input_obs = f'{raw_dir}/{fid}_obs', # Observations
         working_directory = working_dir,
         surface_path = surface_path,
         # skyview_factor = f'2025/sky_view/sky_view_fid/{fid}_sky_view',
@@ -46,9 +46,7 @@ if os.path.exists(working_dir) is False:
         
         # implementation
         n_cores = 64,
-        ray_temp_dir = '/tmp/ray',
         analytical_line=True,
-        multiple_restarts=True,
         no_min_lut_spacing=True,
         pressure_elevation=True,
         presolve=True,

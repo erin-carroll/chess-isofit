@@ -1,8 +1,8 @@
-FIDS=($(cat /store/carroll/repos/chess-isofit/2018/2_deploy/test_fid.txt))
+FIDS=($(cat /store/carroll/repos/chess-isofit/2018/2_deploy/crbu_2018_fids.txt))
 
 for fid in "${FIDS[@]}"; do
     sbatch \
-        --job-name=test_6c_2018_${fid} \
+        --job-name=batch_6c_2018_${fid} \
         --nodes=1 \
         --cpus-per-task=64 \
         --partition=highcpu \

@@ -31,22 +31,23 @@ for fid in tqdm(fids):
     dsm_smooth = smoothed / weights
     dsm_smooth[weights == 0] = np.nan
 
-    # clip output for loc, export
-    dsm_smooth_na = dsm_smooth.copy()
-    dsm_smooth_na[na_mask] = nodata
-    dsm_smooth_na[np.isnan(dsm_smooth_na)] = nodata
-    loc[...,2] = dsm_smooth_na
+    # # clip output for loc, export
+    # dsm_smooth_na = dsm_smooth.copy()
+    # dsm_smooth_na[na_mask] = nodata
+    # dsm_smooth_na[np.isnan(dsm_smooth_na)] = nodata
+    # loc[...,2] = dsm_smooth_na
 
-    fp_out = fp_loc.replace('rdn_ort_igm_ort', f'loc_smooth_{sigma}')
-    meta = envi.open(fp_loc).metadata
-    envi.create_image(fp_out, meta, ext='', force=True)
-    dst = envi.open(fp_out)
-    dst_mm = dst.open_memmap(writable=True)
-    dst_mm[...] = loc
-    dst_mm.flush() 
+    # fp_out = fp_loc.replace('rdn_ort_igm_ort', f'loc_smooth_{sigma}')
+    # meta = envi.open(fp_loc).metadata
+    # envi.create_image(fp_out, meta, ext='', force=True)
+    # dst = envi.open(fp_out)
+    # dst_mm = dst.open_memmap(writable=True)
+    # dst_mm[...] = loc
+    # dst_mm.flush() 
 
     # calculate slope, aspect on extended smooth dsm
-    slope, aspect = skyview.gradient_d8(dsm_smooth, dx=1, dy=1, aspect_rad=True) # slope, aspect in rad
+    slope, aspect = skyview.gradient_d8(dsm_smooth, dx=1, dy=1, aspect_rad=False) # slope in rad, aspect in degrees
+    aspect = np.radians(aspect)
     slope[na_mask] = np.nan
     aspect[na_mask] = np.nan
 
