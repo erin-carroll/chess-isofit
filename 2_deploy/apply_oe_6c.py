@@ -9,7 +9,7 @@ from glob import glob
 # Enable the ISOFIT logger
 logging.getLogger().setLevel(logging.INFO)
 
-# set up parser so flight id submitted from batch script
+# set up to submit flight id from batch script
 parser = argparse.ArgumentParser()
 parser.add_argument("--fid", required=True)
 args = parser.parse_args()

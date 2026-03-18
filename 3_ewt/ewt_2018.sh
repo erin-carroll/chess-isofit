@@ -1,7 +1,7 @@
 list=/store/carroll/col/data/2018/mosaic/file_lists/top_priority_isofit_refl.txt
 
 while IFS= read -r fp; do
-    [[ -z "$fid" ]] && continue   # skip blank lines
+    [[ -z "$fid" ]] && continue
     sbatch \
         --job-name=ewt_2018 \
         --nodes=1 \

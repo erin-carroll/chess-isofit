@@ -14,7 +14,9 @@ conda activate isofit_env
 
 DOMAIN="$DOMAIN"
 
-BASE="/store/carroll/col/data/2025"
+YEAR="$YEAR"
+
+BASE="/store/carroll/col/data/${YEAR}"
 cd "$BASE"
 
 # prevent hidden threading storms
@@ -26,19 +28,19 @@ export NUMEXPR_NUM_THREADS=1
 TILE_LIST="mosaic/file_lists/${DOMAIN}_glt_tiles.txt"
 ALL_RFL="mosaic/file_lists/top_priority_rfl_${DOMAIN}.txt"
 ALL_UNC="mosaic/file_lists/top_priority_unc_${DOMAIN}.txt"
-CITATION_STR="mosaic/citation_str_2025.txt"
+CITATION_STR="mosaic/citation_str_${YEAR}.txt"
 
 GLT_FILE="$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$TILE_LIST")"
 echo "TASK ${SLURM_ARRAY_TASK_ID}: ${GLT_FILE}"
 
 TILE_ID="$(basename "$GLT_FILE")"
-TILE_ID="${TILE_ID#*2025_}"
+TILE_ID="${TILE_ID##*_glt_}"
 TILE_ID="${TILE_ID%.tif}"
 
 OUT_DIR="mosaic/mosaic_tiled/${DOMAIN}"
-FP_OUT="${OUT_DIR}/${DOMAIN}_2025_mosaic_rfl_${TILE_ID}.nc"
+FP_OUT="${OUT_DIR}/${DOMAIN}_${YEAR}_mosaic_rfl_${TILE_ID}.nc"
 
-# ---- helper: true if variable exists as a root variable in header ----
+# ---- helper: true if variable already exists as a root variable in header ----
 nc_has_var () {
   local fp="$1"
   local var="$2"
