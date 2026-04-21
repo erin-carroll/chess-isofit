@@ -28,13 +28,11 @@ fp_rfl = glob(f'/store/carroll/col/data/{year}/deploy_6c_20260214/{fid}*/output/
 fp_unc = glob(f'/store/carroll/col/data/{year}/deploy_6c_20260214/{fid}*/output/{fid}_uncert')[0]
 fp_shade = glob(f'/store/carroll/col/data/{year}/shade/{fid}*shade.tif')[0]
 if year=='2025':
-    fp_loc = glob(f'/store/carroll/col/data/{year}/raw/L1/radianceENVI/{fid}*_IGM_Data')[0]
-    fp_poly = '/store/carroll/col/data/extractions/crown_delineation_Tree_all.geojson'
+    fp_poly = '/store/carroll/col/data/extractions/crown_delineation_all.geojson'
 else:
-    fp_loc = glob(f'/store/carroll/col/data/{year}/raw/L1/*/{fid}_rdn_ort_igm_ort')[0]
     fp_poly = '/store/carroll/col/data/extractions/CRBU2018_AOP_Crowns.geojson'
 
-if any(not os.path.exists(fp) for fp in [fp_rfl, fp_unc, fp_shade, fp_loc]):
+if any(not os.path.exists(fp) for fp in [fp_rfl, fp_unc, fp_shade]):
     print(f'missing input rasters for fid {fid}, exiting')
     sys.exit(1)
 
@@ -43,7 +41,7 @@ gdf = gpd.read_file(fp_poly)
 gdf = gdf.rename(columns={'id': 'site_number'})
 gdf['site_number'] = gdf.site_number.astype(float)
 shapes = [(mapping(geom), val) for geom, val in zip(gdf.geometry, gdf.site_number)]
-with rasterio.open(fp_loc) as src:
+with rasterio.open(fp_rfl) as src:
     mask = rasterize(shapes, out_shape=(src.height, src.width), transform=src.transform, all_touched=False, nodata=nodatavalue, fill=nodatavalue)
     nodata = src.read(1)==nodatavalue
 mask[nodata] = nodatavalue
@@ -67,9 +65,8 @@ all_shade = []
 def single_read(i):
     row = rows[i]
     col = cols[i]
-    xy = gdal.Open(fp_loc,gdal.GA_ReadOnly).ReadAsArray(col,row,1,1)
-    x_utm = xy[0,0,0]
-    y_utm = xy[1,0,0]
+    with rasterio.open(fp_rfl) as src:
+        x_utm, y_utm = rasterio.transform.xy(src.transform, row, col)
     rfl_dat = gdal.Open(fp_rfl, gdal.GA_ReadOnly).ReadAsArray(col,row,1,1).reshape(1,-1)
     unc_dat = gdal.Open(fp_unc, gdal.GA_ReadOnly).ReadAsArray(col,row,1,1).reshape(1,-1)
     shade_dat = gdal.Open(fp_shade,gdal.GA_ReadOnly).ReadAsArray(col,row,1,1)[0,0]

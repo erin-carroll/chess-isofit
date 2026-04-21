@@ -7,6 +7,7 @@ from tqdm import tqdm
 import argparse
 from glob import glob
 import os
+import sys
 
 # set up parser so flight id submitted from batch script
 parser = argparse.ArgumentParser()
@@ -32,64 +33,51 @@ def edge_coords_from_target(target_px_x: np.array, target_px_y: np.array, angle:
         angle (array, float): angle in degrees, clockwise from North.
         bounds (tuple): bounds of the image in the format (min_x, min_y, max_x, max_y).
     """
+    min_x, min_y, max_x, max_y = bounds
 
     # Compute direction vector (dx, dy) in image coordinates
-    dy = np.sin(np.deg2rad(angle))  
+    dy = -np.sin(np.deg2rad(angle)) # invert y
     dx = np.cos(np.deg2rad(angle))  
-    #dy = -dy  # Invert y direction for image coordinates
 
-    # invert = np.zeros_like(angle, dtype=bool)
-    # invert[np.logical_and(angle > 180, angle < 360)] = True
-    # invert[np.logical_and(angle < 0, angle > -180)] = True
-    invert = np.ones_like(angle, dtype=bool)
+    # choose the boundary in the forward ray direction
+    x_edge = np.where(dx >= 0, max_x, min_x)
+    y_edge = np.where(dy >= 0, max_y, min_y)
 
-    xdelta = np.ones_like(angle, dtype=int) * target_px_x
-    ydelta = np.ones_like(angle, dtype=int) * target_px_y
+    # parametric distance to vertical and horizontal boundaries
+    tx = (x_edge - target_px_x) / dx
+    ty = (y_edge - target_px_y) / dy
 
-    if np.any(invert):
-        print('inverting')
-        xdelta[invert] = bounds[2] - target_px_x[invert]
-        ydelta[invert] = bounds[3] - target_px_y[invert]
-        xdelta[invert] *= -1
-        ydelta[invert] *= -1
+    # only forward intersections count
+    tx = np.where(tx >= 0, tx, np.inf)
+    ty = np.where(ty >= 0, ty, np.inf)
 
-    # There will be two candidate edges, one on the x-axis, and one the y-axis.
-    # Start by finding both
-    edge_px_horizontal_y = np.zeros_like(angle, dtype=int) 
-    if np.any(invert):
-        edge_px_horizontal_y[invert] = bounds[3]
-    edge_px_horizontal_x = dx / dy * ydelta  + target_px_x
+    # take the first boundary the ray hits
+    use_x = tx < ty
+    t = np.where(use_x, tx, ty)
 
-    edge_px_vertical_x = np.zeros_like(angle, dtype=int)
-    if np.any(invert):
-        edge_px_vertical_x[invert] = bounds[2]
-    edge_px_vertical_y = dy / dx * xdelta + target_px_y
+    edge_px_x_out = target_px_x + t * dx
+    edge_px_y_out = target_px_y + t * dy
 
-    vertical_select = np.logical_or.reduce((
-        edge_px_horizontal_x < bounds[0],
-        edge_px_horizontal_x > bounds[2],
-        edge_px_horizontal_y < bounds[1],
-        edge_px_horizontal_y > bounds[3]
-    ))
+    # round and clip to valid pixel indices
+    edge_px_x_out = np.clip(np.rint(edge_px_x_out).astype(int), min_x, max_x)
+    edge_px_y_out = np.clip(np.rint(edge_px_y_out).astype(int), min_y, max_y)
 
-    edge_px_x_out = edge_px_horizontal_x.copy()
-    edge_px_y_out = edge_px_horizontal_y.copy()
-    edge_px_x_out[vertical_select] = edge_px_vertical_x[vertical_select]
-    edge_px_y_out[vertical_select] = edge_px_vertical_y[vertical_select]
-    slope = dy / dx
-    return edge_px_x_out, edge_px_y_out, slope
-
+    return edge_px_x_out, edge_px_y_out
 
 # define inputs
 if '2018' in fid:
     obs_file = glob(f'/store/carroll/col/data/2018/raw/L1/*/{fid}_rdn_obs_ort')[0]
     dsm_file = glob(f'/store/carroll/col/data/2018/raw/L1/*/{fid}_rdn_ort_igm_ort')[0]
 elif '2025' in fid:
+    fid = '_'.join(fid.split('_')[:3])
     obs_file = glob(f'/store/carroll/col/data/2025/raw/L1/radianceENVI/{fid}_OBS_Data')[0]
     dsm_file = glob(f'/store/carroll/col/data/2025/raw/L1/radianceENVI/{fid}_IGM_Data')[0]
 output_file = os.path.join(output_folder, f'{fid}_shade.tif')
 
-# if os.path.exists(output_file)==False:
+# if os.path.exists(output_file):
+#     print(f'{fid} already exists, exiting')
+#     sys.exit(0)
+
 obs_set = gdal.Open(obs_file, gdal.GA_ReadOnly)
 solar_azimuth = obs_set.GetRasterBand(solar_azimuth_band).ReadAsArray()
 solar_zenith = obs_set.GetRasterBand(solar_zenith_band).ReadAsArray()
@@ -102,7 +90,7 @@ valid = dsm>=0
 valid_loc = np.where(valid)
 
 # identify the coordinates of the solar edge pixel for each target pixel
-solar_edge_px_x, solar_edge_px_y, _ = edge_coords_from_target(valid_loc[1], valid_loc[0], cwn_to_math(solar_azimuth[valid]), bounds)
+solar_edge_px_x, solar_edge_px_y = edge_coords_from_target(valid_loc[1], valid_loc[0], cwn_to_math(solar_azimuth[valid]), bounds)
 
 # set up output shade mask
 shade_mask = np.ones_like(solar_azimuth)

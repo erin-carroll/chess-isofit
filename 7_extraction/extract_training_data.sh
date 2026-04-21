@@ -1,5 +1,5 @@
 FID_FILES=(
-  /store/carroll/col/data/2018/mosaic/file_lists/crbu_2018_fids.txt
+  /store/carroll/col/data/2018/mosaic/file_lists/CRBU_2018_fids.txt
   /store/carroll/col/data/2025/mosaic/file_lists/ALMO_2025_fids.txt
   /store/carroll/col/data/2025/mosaic/file_lists/CRBU_2025_fids.txt
   /store/carroll/col/data/2025/mosaic/file_lists/UPTA_2025_fids.txt
